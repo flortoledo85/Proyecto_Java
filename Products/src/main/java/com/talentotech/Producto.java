@@ -63,7 +63,7 @@ public class Producto {
     }
 
     public int getStock() {
-        return stock;
+        return stock;   
     }
 
     public void setStock(int stock) {
