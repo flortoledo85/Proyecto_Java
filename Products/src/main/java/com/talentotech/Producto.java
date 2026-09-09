@@ -42,11 +42,14 @@ public class Producto {
     //     this.id = id;
     // }
 
+    public void setName(String name) {
+        if (name != null && !name.trim().isEmpty()){
+            this.name = name;
+        }
+    }
+
     public String getName() {
         return name;
-    }
-    public void setName(String name) {
-        this.name = name;
     }
     
     public Double getPrice() {
@@ -54,7 +57,9 @@ public class Producto {
     }
 
     public void setPrice(Double price) {
-        this.price = price;
+        if (price >=0){
+            this.price = price;
+        }
     }
 
     public int getStock() {
@@ -62,7 +67,9 @@ public class Producto {
     }
 
     public void setStock(int stock) {
-        this.stock = stock;
+        if (stock >=0) {
+            this.stock = stock;
+        }
     }
 
     public static int getTotalProductos(){
