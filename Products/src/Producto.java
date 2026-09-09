@@ -76,6 +76,10 @@ public class Producto {
     public static Double calcularImpuesto(Double price) {
         return price * 0.21; //IVA
     }
+
+    public static Double calcularDescuento(Double price) {
+        return price * 0.10;
+    }
     
     public void mostrarDatos() {
         System.out.println("ID: " + id);
