@@ -68,6 +68,14 @@ public class Producto {
     public static int getTotalProductos(){
         return totalProductos;
     }
+
+    public void descontarStock(int cantidad) {
+        this.stock -= cantidad;
+    }
+
+    public static Double calcularImpuesto(Double price) {
+        return price * 0.21; //IVA
+    }
     
     public void mostrarDatos() {
         System.out.println("ID: " + id);
