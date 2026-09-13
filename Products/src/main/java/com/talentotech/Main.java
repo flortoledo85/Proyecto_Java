@@ -23,7 +23,7 @@ public class Main {
         double precio = ingreso.nextDouble();
         ingreso.nextLine(); // limpiar el buffer despues de nextDouble()
 
-        Producto p1 = new Producto (nombre,precio,100);
+        Producto p1 = new Armazones(nombre,precio,100,14.5);
 
         p1.mostrarDatos();
 

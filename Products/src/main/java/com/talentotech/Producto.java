@@ -1,6 +1,6 @@
 package com.talentotech;
 
-public class Producto {
+public abstract class Producto {
     private static Long contadorId = 0L;
     private static int totalProductos = 0;
     private Long id;
@@ -33,6 +33,8 @@ public class Producto {
         this.stock = stock;
         totalProductos++;
     }
+
+    public abstract String getCategoria();
 
     public Long getId() {
         return id;

@@ -15,7 +15,7 @@ public class Pedido {
     }
 
     public Double calcularTotal() {
-        Double total = 0;
+        Double total = 0.;
         for (Producto p : productos) {
             total += p.getPrice() * p.getStock();
         }
