@@ -1,15 +1,15 @@
 package com.talentotech;
 
 public class Armazones extends Producto implements Vendible, Etiquetable{
-        public Double medidas;
+        private Medidas medidas;
 
-        public Armazones (String name, Double price, int stock, Double medidas){
+        public Armazones (String name, Double price, int stock, Medidas medidas){
             super(name, price, stock);
             this.medidas = medidas;
         }
 
 
-        public Double getMedidas() {
+        public Medidas getMedidas() {
             return medidas;
         }
 
