@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         // Producto p1 = new Producto("Coca", 2500., 100);
+        ProductoService productoService = new ProductoService();
         Scanner ingreso = new Scanner(System.in);
         int opcion;
 
@@ -28,8 +29,10 @@ public class Main {
 
             switch (opcion) {
                 case 1:
+                    productoService.agregarArmazon(ingreso);
                     break;
                 case 2:
+                    productoService.listarProductos(ingreso);
                     break;
                 case 3:
                     break;

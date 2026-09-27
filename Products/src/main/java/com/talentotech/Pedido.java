@@ -1,23 +1,26 @@
 package com.talentotech;
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class Pedido {
-    private ArrayList<Producto> productos;
+    private List<LineaPedido> lineas;
     private Cliente cliente;
 
     public Pedido(Cliente cliente) {
         this.cliente = cliente;
-        this.productos = new ArrayList<>();
+        this.lineas = new ArrayList<LineaPedido>();
     }
     
-    public void agregarProducto(Producto p){
-        productos.add(p);
+    public void agregarProducto(Producto p, int cantidad){
+        LineaPedido l = new LineaPedido(p, cantidad);
+        lineas.add(l);
     }
 
     public Double calcularTotal() {
         Double total = 0.;
-        for (Producto p : productos) {
-            total += p.getPrice() * p.getStock();
+        for (LineaPedido linea : lineas) {
+            total += linea.calcularSubtotal();
         }
         return total;
     }

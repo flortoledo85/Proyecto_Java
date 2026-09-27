@@ -1,5 +1,7 @@
 package com.talentotech;
 
+import com.talentotech.excepciones.EntradaInvalidaExcepcion;
+
 public class Armazones extends Producto implements Vendible, Etiquetable{
         private Medidas medidas;
 
@@ -20,8 +22,15 @@ public class Armazones extends Producto implements Vendible, Etiquetable{
         }
         
         @Override 
-        public void aplicarDescuento(Double porcentaje) {
-            System.out.println("Aplicando " + porcentaje + "%" + " de descuento a " + getName());
+        public Double aplicarDescuento(Double porcentaje) {
+            if (porcentaje < 0 || porcentaje > 100) {
+                throw new EntradaInvalidaExcepcion("Ingrese un porcentaje valido.");
+            }else {
+            // System.out.println("Aplicando " + porcentaje + "%" + " de descuento a " + getName());
+                Double nuevo = Vendible.calcularDescuento(this.getPrice(), porcentaje);
+                setPrice(nuevo);
+                return nuevo;
+            }
         }
 
         @Override 

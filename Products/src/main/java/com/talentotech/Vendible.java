@@ -3,7 +3,7 @@ package com.talentotech;
 public interface Vendible {
     String ESTADO_DEFAULT = "Disponible";
 
-    void aplicarDescuento(Double porcentaje);
+    Double aplicarDescuento(Double porcentaje);
 
     default void mostrarEstado() {
         System.out.println("Estado del producto: " + ESTADO_DEFAULT);

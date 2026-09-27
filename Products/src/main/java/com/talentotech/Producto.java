@@ -1,4 +1,5 @@
 package com.talentotech;
+import com.talentotech.excepciones.*;
 
 public abstract class Producto {
     private static Long contadorId = 0L;
@@ -27,10 +28,14 @@ public abstract class Producto {
     //     }
     // }
     public Producto(String name, Double price, int stock) {
+
+        setName(name);
+        setPrice(price);
+        setStock(stock);
         this.id = ++contadorId;
-        this.name = name;
-        this.price = price;
-        this.stock = stock;
+        // this.name = name;
+        // this.price = price;
+        // this.stock = stock;
         totalProductos++;
     }
 
@@ -47,6 +52,8 @@ public abstract class Producto {
     public void setName(String name) {
         if (name != null && !name.trim().isEmpty()){
             this.name = name;
+        }else {
+            throw new EntradaInvalidaExcepcion("Ingrese un nombre valido");
         }
     }
 
@@ -61,6 +68,8 @@ public abstract class Producto {
     public void setPrice(Double price) {
         if (price >=0){
             this.price = price;
+        }else{
+            throw new EntradaInvalidaExcepcion("Ingreso un numero valido.");
         }
     }
 
@@ -71,6 +80,8 @@ public abstract class Producto {
     public void setStock(int stock) {
         if (stock >=0) {
             this.stock = stock;
+        }else {
+            throw new EntradaInvalidaExcepcion("Ingrese un numero valido.");
         }
     }
 
@@ -79,7 +90,11 @@ public abstract class Producto {
     }
 
     public void descontarStock(int cantidad) {
-        this.stock -= cantidad;
+        if (cantidad >=0 && cantidad <= this.getStock()) {
+            this.stock -= cantidad; 
+        } else {
+            throw new StockInsuficienteExcepcion("La cantidad sobrepasa el stock actual.");
+        }
     }
 
     public static Double calcularImpuesto(Double price) {
