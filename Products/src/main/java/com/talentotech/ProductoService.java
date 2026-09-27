@@ -63,18 +63,24 @@ public class ProductoService {
         }
     } 
 
-    public void listarProductos(){
-        if (productos.isEmpty()){
-            throw new ProductoNoEncontradoExcepcion("Todavia no hay productos cargados");
+    public void mostrarTabla(List<Producto> lista){
+        if (lista.isEmpty()) {
+            System.out.println("Todavia no hay productos cargados");
+            return;
         }
-
         System.out.printf("%-5s %-20s %-10s %-10s%n", "ID", "Nombre", "Precio", "Stock");
         System.out.println("--------------------------------------------------");
 
         for (Producto p : productos) {
            System.out.printf("%-5d %-20s %-10.2f %-10d%n", p.getId(), p.getName(), p.getPrice(), p.getStock());
         }
+    }
 
+    public void listarProductos(){
+      if (productos.isEmpty()){
+        throw new ProductoNoEncontradoExcepcion("Todavia no hay productos cargados");
+      }
+      mostrarTabla(productos);
     }
 
     public Producto buscarPorID(Scanner ingreso){

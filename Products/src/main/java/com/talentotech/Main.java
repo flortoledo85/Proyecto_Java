@@ -1,7 +1,12 @@
 package com.talentotech;
 
 import java.util.Scanner;
-// import java.util.List;
+
+import com.talentotech.excepciones.EntradaInvalidaExcepcion;
+import com.talentotech.excepciones.ProductoNoEncontradoExcepcion;
+import com.talentotech.excepciones.StockInsuficienteExcepcion;
+
+import java.util.List;
 // import java.util.ArrayList;
 
 public class Main {
@@ -26,28 +31,53 @@ public class Main {
 
             opcion = ingreso.nextInt();
             ingreso.nextLine();
-
-            switch (opcion) {
-                case 1:
-                    productoService.agregarArmazon(ingreso);
-                    break;
-                case 2:
-                    productoService.listarProductos(ingreso);
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
-                case 5:
-                    break;
-                case 6:
-                    break;
-                case 7:
-                    System.out.println("Saliendo del sistema...");
-                    break;
-                default:
-                    System.out.println("Opción inválida, intente de nuevo.");
-                    break;
+            try {
+                switch (opcion) {
+                    case 1:
+                        productoService.agregarArmazon(ingreso);
+                        break;
+                    case 2:
+                        productoService.listarProductos();
+                        break;
+                    case 3:
+                        System.out.println("1) Buscar por ID");
+                        System.out.println("2) Buscar por Nombre");
+                        System.out.println("3) Actualizar producto");
+                        System.out.println("Elija una opción.");
+                        int subOpcion = ingreso.nextInt();
+                        ingreso.nextLine();
+                        switch (subOpcion) {
+                            case 1:
+                                Producto encontrado = productoService.buscarPorID(ingreso);
+                                encontrado.mostrarDatos();
+                                break;
+                            case 2:
+                                List<Producto> encontrados = productoService.buscarPorNombre(ingreso);
+                                productoService.mostrarTabla(encontrados);
+                                break;
+                            case 3:
+                                productoService.actualizarProductos(ingreso);
+                                break;
+                            default:
+                                System.out.println("Opción invalida.");
+                                break;
+                        }
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        break;
+                    case 6:
+                        break;
+                    case 7:
+                        System.out.println("Saliendo del sistema...");
+                        break;
+                    default:
+                        System.out.println("Opción inválida, intente de nuevo.");
+                        break;
+                }
+            }catch (ProductoNoEncontradoExcepcion | EntradaInvalidaExcepcion | StockInsuficienteExcepcion e) {
+                System.out.println("Error : " + e.getMessage());
             }
         } while (opcion != 7);
 
