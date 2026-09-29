@@ -14,6 +14,7 @@ public class Main {
         // Producto p1 = new Producto("Coca", 2500., 100);
         ProductoService productoService = new ProductoService();
         Scanner ingreso = new Scanner(System.in);
+        productoService.cargarProductosPrueba();
         int opcion;
 
         do {

@@ -73,6 +73,7 @@ public class ProductoService {
 
         for (Producto p : productos) {
            System.out.printf("%-5d %-20s %-10.2f %-10d%n", p.getId(), p.getName(), p.getPrice(), p.getStock());
+           System.out.println("--------------------------------------------------");
         }
     }
 
@@ -87,7 +88,7 @@ public class ProductoService {
         if (productos.isEmpty()){
             throw new ProductoNoEncontradoExcepcion("Todavia no hay productos cargados");
         } 
-
+        listarProductos();
         System.out.println("Que ID desea seleccionar?: ");
         Long idBuscado;
         try {
@@ -111,7 +112,7 @@ public class ProductoService {
         // if (productos.isEmpty()){
         //     throw new ProductoNoEncontradoExcepcion("Todavia no hay productos cargados");
         // } 
-
+        listarProductos();
         System.out.println("Que nombre desea buscar?: ");
         String nombreBuscado = ingreso.nextLine();
         
@@ -213,6 +214,12 @@ public class ProductoService {
                     break;
             }
         } while (opcion != 4);
+    }
+
+    public void cargarProductosPrueba() {
+        productos.add(new Armazones("RayBan Aviator", 45000.0, 10, new Medidas(140.0, 145.0, 50.0, 35.0)));
+        productos.add(new Armazones("Seven", 15000.0, 20, new Medidas(138.0, 142.0, 48.0, 34.0)));
+        productos.add(new Armazones("Sol Bordo", 25000.0, 15, new Medidas(140.0, 145.0, 53.0, 48.0)));
     }
 
     public List<Producto> getProductos(){
