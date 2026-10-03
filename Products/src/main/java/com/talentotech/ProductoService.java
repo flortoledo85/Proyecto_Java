@@ -109,9 +109,6 @@ public class ProductoService {
 
 
     public List<Producto> buscarPorNombre(Scanner ingreso){
-        // if (productos.isEmpty()){
-        //     throw new ProductoNoEncontradoExcepcion("Todavia no hay productos cargados");
-        // } 
         listarProductos();
         System.out.println("Que nombre desea buscar?: ");
         String nombreBuscado = ingreso.nextLine();

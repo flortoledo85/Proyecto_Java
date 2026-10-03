@@ -9,33 +9,12 @@ public abstract class Producto {
     private Double price;
     private int stock;
 
-    // public Producto() {
-    //     this.id = ++contadorId;
-    //     this.name = "Producto X";
-    //     this.price = 0.0;
-    //     this.stock = 0;
-    // }
-
-    // public Producto(String name, Double price, int stock) {
-    //     this.id = ++contadorId;
-    //     this.name = name;
-    //     this.price = price;
-    //     this.stock = stock;
-    //     if (this.stock == 0) {
-    //         this.stock = 1;
-    //     } else {
-    //         this.stock = stock;
-    //     }
-    // }
     public Producto(String name, Double price, int stock) {
 
         setName(name);
         setPrice(price);
         setStock(stock);
         this.id = ++contadorId;
-        // this.name = name;
-        // this.price = price;
-        // this.stock = stock;
         totalProductos++;
     }
 
@@ -44,10 +23,6 @@ public abstract class Producto {
     public Long getId() {
         return id;
     }
-
-    // public void setId(Long id) {
-    //     this.id = id;
-    // }
 
     public void setName(String name) {
         if (name != null && !name.trim().isEmpty()){
