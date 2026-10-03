@@ -35,7 +35,7 @@ public class ProductoService {
             System.out.println("Alto de Cristal: ");
             altoCristal = ingreso.nextDouble();
 
-            ingreso.nextLine();
+            // ingreso.nextLine();
         } catch (InputMismatchException e) {
             ingreso.nextLine();
             throw new EntradaInvalidaExcepcion("Ingrese valores numéricos válidos");
@@ -68,13 +68,15 @@ public class ProductoService {
             System.out.println("Todavia no hay productos cargados");
             return;
         }
-        System.out.printf("%-5s %-20s %-10s %-10s%n", "ID", "Nombre", "Precio", "Stock");
-        System.out.println("--------------------------------------------------");
+        System.out.println(Main.CYAN + "====================================================" + Main.RESET);
+        System.out.printf(Main.NEGRITA + "%-5s %-20s %-10s %-10s%n" + Main.RESET, "ID", "Nombre", "Precio", "Stock");
+        System.out.println(Main.CYAN + "====================================================" + Main.RESET);
 
-        for (Producto p : productos) {
-           System.out.printf("%-5d %-20s %-10.2f %-10d%n", p.getId(), p.getName(), p.getPrice(), p.getStock());
-           System.out.println("--------------------------------------------------");
+        for (Producto p : lista) {
+        System.out.printf("%-5d %-20s %-10.2f %-10d%n", p.getId(), p.getName(), p.getPrice(), p.getStock());
+        System.out.println("----------------------------------------------------");
         }
+        System.out.println(Main.CYAN + "====================================================" + Main.RESET);
     }
 
     public void listarProductos(){
@@ -93,6 +95,7 @@ public class ProductoService {
         Long idBuscado;
         try {
             idBuscado = ingreso.nextLong();
+            ingreso.nextLine();
         } catch (InputMismatchException e){
             ingreso.nextLine();
             throw new EntradaInvalidaExcepcion("ID incorrecto. Ingrese un ID valido");
@@ -112,7 +115,7 @@ public class ProductoService {
         listarProductos();
         System.out.println("Que nombre desea buscar?: ");
         String nombreBuscado = ingreso.nextLine();
-        
+        System.out.println("DEBUG: nombreBuscado = [" + nombreBuscado + "]");
         List<Producto> productosEncontrados = new ArrayList<>();
 
         if (nombreBuscado != null && !nombreBuscado.isEmpty()){
@@ -126,7 +129,7 @@ public class ProductoService {
     }
 
     public void eliminarProducto(Scanner ingreso){
-        listarProductos();
+        // listarProductos();
         
         System.out.println("Elija el ID del producto que desea eliminar.");
         

@@ -18,4 +18,9 @@ public class LineaPedido {
     public Double calcularSubtotal() {
         return producto.getPrice()*cantidad;
     }
+
+    @Override 
+    public String toString() {
+        return producto.getName() + " x" + cantidad+ " = $ "+ calcularSubtotal();
+    }
 }

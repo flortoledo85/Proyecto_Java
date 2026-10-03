@@ -24,4 +24,12 @@ public class Pedido {
         }
         return total;
     }
+
+    public void mostrarPedido(){
+        System.out.println("Cliente "+ cliente.getUser());
+        for (LineaPedido linea: lineas) {
+            System.out.println(linea);
+        };
+        System.out.println("Total: "+ calcularTotal());
+    }
 }
