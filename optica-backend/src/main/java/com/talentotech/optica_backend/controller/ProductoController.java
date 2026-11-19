@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.http.ResponseEntity;
 import java.util.List;
 import com.talentotech.optica_backend.model.*;
 
@@ -21,29 +22,30 @@ public class ProductoController {
     }
 
     @GetMapping
-    public List<Producto> listarProductos() {
-        return productoService.getProductos();
+    public ResponseEntity<List<Producto>> listarProductos() {
+        return ResponseEntity.ok(productoService.getProductos());
     }
 
     @GetMapping("/{id}")
-    public Producto obtenerProducto(@PathVariable int id) {
-        return productoService.buscarPorID(id);
+    public ResponseEntity <Producto> obtener(@PathVariable Long id) {
+        return ResponseEntity.ok(productoService.buscarPorID(id));
     }
 
     @PostMapping
-    public Producto creear(@RequestBody Producto p) {
-        return productoService.guardar(p);
+    public ResponseEntity<Producto> crear(@RequestBody Producto p) {
+        return ResponseEntity.ok(productoService.guardar(p));
     }
 
     @PutMapping("/{id}")
-    public Producto actualizar(@PathVariable int id, @RequestBody DatosActualizacion datos) {
-        return productoService.actualizarProducto(id, datos.precio, datos.stock);
+    public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody DatosActualizacion datos) {
+        return ResponseEntity.ok(productoService.actualizarProducto(id, datos.precio, datos.stock));
     }
 
     public record DatosActualizacion(Double precio, Integer stock) {}
 
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable int id) {
-        productoService.eliminar(id);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        productoService.eliminarProducto(id);
+        return ResponseEntity.noContent().build();
     }
 }
