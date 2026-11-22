@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
@@ -26,8 +26,11 @@ public class ProductoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Producto>> listarProductos() {
-        return ResponseEntity.ok(productoService.getProductos());
+    public ResponseEntity<List<Producto>> listarProductos(@RequestParam(name = "nombre", required = false) String nombre) {
+        if (nombre == null){
+            return ResponseEntity.ok(productoService.getProductos());
+        }
+        return ResponseEntity.ok(productoService.buscarPorNombre(nombre));
     }
 
     @GetMapping("/{id}")
