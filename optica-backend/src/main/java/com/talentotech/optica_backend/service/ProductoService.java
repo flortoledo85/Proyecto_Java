@@ -1,4 +1,5 @@
 package com.talentotech.optica_backend;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -6,21 +7,23 @@ import java.util.Scanner;
 import java.util.Locale;
 import com.talentotech.optica_backend.exceptions.*;
 import org.springframework.stereotype.Service;
-import com.talentotech.optica_backend.model.*;
+import com.talentotech.optica_backend.model.Producto;
+import com.talentotech.optica_backend.model.Categoria;
+import com.talentotech.optica_backend.repository.CategoriaRepository;
 import com.talentotech.optica_backend.repository.ProductoRepository;
 
 @Service
-
 public class ProductoService {
     private final ProductoRepository repository;
+    private final CategoriaRepository categoriaRepository;
     private List<Producto> productos = new ArrayList<>();
 
-    public ProductoService(ProductoRepository repository) {
+    public ProductoService(ProductoRepository repository, CategoriaRepository categoriaRepository) {
         this.repository = repository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     public Producto agregarArmazon(String nombre, Double precio, int stock, Medidas medidas){
-  
         Producto nuevoArmazon = new Armazones(nombre, precio, stock, medidas);
         productos.add(nuevoArmazon);
         return nuevoArmazon;
@@ -33,15 +36,14 @@ public class ProductoService {
     public Producto guardar(Producto producto) {
         productos.add(producto);
         return producto;
-}
+    }
 
     public Producto buscarPorID(Integer idBuscado) {
-        for (Producto producto : productos) {
-            if (producto.getId().equals(idBuscado)){
-                return producto;
+        Optional<Producto> resultado = repository.findById(idBuscado);
+        if (resultado.isEmpty()){
+                throw new ProductoNoEncontradoExcepcion("Id wasn't find it: " + idBuscado);
             }
-        }
-        throw new ProductoNoEncontradoExcepcion("Id wasn't find it: " + idBuscado);
+        return resultado.get();
     }
 
     public List<Producto> buscarPorNombre(String nombreBuscado) {
@@ -49,7 +51,7 @@ public class ProductoService {
         if (nombreBuscado == null || nombreBuscado.isEmpty()) {
             return encontrados;
         }
-         String criterio = nombreBuscado.toLowerCase(Locale.ROOT);
+        String criterio = nombreBuscado.toLowerCase(Locale.ROOT);
         for (Producto producto : productos) {
             if (producto.getNombre().toLowerCase(Locale.ROOT).contains(criterio)) {
                 encontrados.add(producto);
@@ -59,35 +61,26 @@ public class ProductoService {
     }
 
     public void eliminarProducto(Integer id) {
-        productos.remove(buscarPorID(id));
+        Producto p = buscarPorID(id);
+        repository.delete(p);
     }
 
-    public Producto actualizarProducto(Integer id, Double precio, Integer stock) {
-        Producto producto = buscarPorID(id);
+    public Producto actualizarProducto(Integer id, Producto datos) {
+        Producto p = buscarPorID(id);
 
-        if (precio != null && (precio < 0. || Double.isNaN(precio))){
-            throw new EntradaInvalidaExcepcion("The price is not valid");
-        }
-        
-        if (stock != null && stock < 0) {
-            throw new EntradaInvalidaExcepcion("Stock number is not valid");
-        }
+        p.setNombre(datos.getNombre());
+        p.setPrecio(datos.getPrecio());
+        p.setStock(datos.setStock());
+        p.setCategoria(obtenerCategoria(datos));
 
-        if (precio != null) {
-            producto.setPrecio(precio);
-        }
-
-        if (stock != null) {
-            producto.setStock(stock);
-        }
-        return producto;
+        return repository.save(p);
     }
+    // public void cargarProductosPrueba() {
+    //     agregarArmazon("RayBan Aviator", 45000.0, 10, new Medidas(140.0, 145.0, 50.0, 35.0));
+    //     agregarArmazon("Seven", 15000.0, 20, new Medidas(138.0, 142.0, 48.0, 34.0));
+    //     agregarArmazon("Sol Bordo", 25000.0, 15, new Medidas(140.0, 145.0, 53.0, 48.0));
+    // }
 
-    public void cargarProductosPrueba() {
-        agregarArmazon("RayBan Aviator", 45000.0, 10, new Medidas(140.0, 145.0, 50.0, 35.0));
-        agregarArmazon("Seven", 15000.0, 20, new Medidas(138.0, 142.0, 48.0, 34.0));
-        agregarArmazon("Sol Bordo", 25000.0, 15, new Medidas(140.0, 145.0, 53.0, 48.0));
-    }
 
     public List<Producto> getProductos() {
         return repository.findAll();

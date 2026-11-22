@@ -1,14 +1,14 @@
 package com.talentotech.optica_backend.model;
+import java.math.BigDecimal;
 import java.lang.annotation.Inherited;
-
 import javax.annotation.processing.Generated;
-
 import com.talentotech.optica_backend.exceptions.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 public class Producto {
@@ -16,14 +16,15 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private static int totalProductos = 0;
     private String nombre;
-    private Double precio;
+    private BigDecimal precio;
     private int stock;
-    @Transient
-    private String categoria;
 
-    public Producto(String nombre, Double precio, int stock) {
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
+    public Producto(String nombre, BigDecimal precio, int stock) {
 
         setNombre(nombre);
         setPrecio(precio);
@@ -33,7 +34,7 @@ public class Producto {
 
     protected Producto() {}
 
-    public String getCategoria(){
+    public Categoria getCategoria(){
         return categoria;
     };
 
@@ -53,11 +54,11 @@ public class Producto {
         return nombre;
     }
     
-    public Double getPrecio() {
+    public BigDecimal getPrecio() {
         return precio;
     }
 
-    public void setPrecio(Double precio) {
+    public void setPrecio(BigDecimal precio) {
         if (precio >=0){
             this.precio = precio;
         }else{
@@ -89,11 +90,11 @@ public class Producto {
         }
     }
 
-    public static Double calcularImpuesto(Double precio) {
+    public static BigDecimal calcularImpuesto(BigDecimal precio) {
         return precio * 0.21; //IVA
     }
 
-    public static Double calcularDescuento(Double precio) {
+    public static BigDecimal calcularDescuento(BigDecimal precio) {
         return precio * 0.10;
     }
     
