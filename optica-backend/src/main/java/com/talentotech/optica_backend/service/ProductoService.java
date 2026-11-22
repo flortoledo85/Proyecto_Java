@@ -51,17 +51,10 @@ public class ProductoService {
     }
 
     public List<Producto> buscarPorNombre(String nombreBuscado) {
-        List<Producto> encontrados = new ArrayList<>();
-        if (nombreBuscado == null || nombreBuscado.isEmpty()) {
-            return encontrados;
+        if (nombreBuscado == null || nombreBuscado.isBlank()) {
+            return List.of();
         }
-        String criterio = nombreBuscado.toLowerCase(Locale.ROOT);
-        for (Producto producto : productos) {
-            if (producto.getNombre().toLowerCase(Locale.ROOT).contains(criterio)) {
-                encontrados.add(producto);
-            }
-        }
-        return encontrados;
+        return repository.findByNombreContainingIgnoreCase(nombreBuscado.strip());
     }
 
     public void eliminarProducto(Integer id) {
