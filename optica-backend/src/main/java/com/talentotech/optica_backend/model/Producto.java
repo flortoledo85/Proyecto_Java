@@ -25,8 +25,8 @@ public abstract class Producto {
 
     public Producto(String nombre, Double precio, int stock) {
 
-        setName(nombre);
-        setPrice(precio);
+        setNombre(nombre);
+        setPrecio(precio);
         setStock(stock);
         totalProductos++;
     }
