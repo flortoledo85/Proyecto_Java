@@ -7,6 +7,7 @@ import java.util.Locale;
 import com.talentotech.optica_backend.exceptions.*;
 import org.springframework.stereotype.Service;
 import com.talentotech.optica_backend.model.*;
+import com.talentotech.optica_backend.repository.ProductoRepository;
 
 @Service
 
@@ -14,7 +15,7 @@ public class ProductoService {
     private final ProductoRepository repository;
     private List<Producto> productos = new ArrayList<>();
 
-    public ProductoService(ProductoService repository) {
+    public ProductoService(ProductoRepository repository) {
         this.repository = repository;
     }
 
@@ -34,7 +35,7 @@ public class ProductoService {
         return producto;
 }
 
-    public Producto buscarPorID(Long idBuscado) {
+    public Producto buscarPorID(Integer idBuscado) {
         for (Producto producto : productos) {
             if (producto.getId().equals(idBuscado)){
                 return producto;
@@ -50,18 +51,18 @@ public class ProductoService {
         }
          String criterio = nombreBuscado.toLowerCase(Locale.ROOT);
         for (Producto producto : productos) {
-            if (producto.getName().toLowerCase(Locale.ROOT).contains(criterio)) {
+            if (producto.getNombre().toLowerCase(Locale.ROOT).contains(criterio)) {
                 encontrados.add(producto);
             }
         }
         return encontrados;
     }
 
-    public void eliminarProducto(Long id) {
+    public void eliminarProducto(Integer id) {
         productos.remove(buscarPorID(id));
     }
 
-    public Producto actualizarProducto(Long id, Double precio, Integer stock) {
+    public Producto actualizarProducto(Integer id, Double precio, Integer stock) {
         Producto producto = buscarPorID(id);
 
         if (precio != null && (precio < 0. || Double.isNaN(precio))){
@@ -73,7 +74,7 @@ public class ProductoService {
         }
 
         if (precio != null) {
-            producto.setPrice(precio);
+            producto.setPrecio(precio);
         }
 
         if (stock != null) {

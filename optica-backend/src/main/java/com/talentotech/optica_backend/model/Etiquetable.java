@@ -1,4 +1,4 @@
-package com.talentotech.optica_backend;
+package com.talentotech.optica_backend.model;
 
 public interface Etiquetable {
 

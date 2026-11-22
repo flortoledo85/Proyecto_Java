@@ -1,12 +1,12 @@
-package com.talentotech.optica_backend;
+package com.talentotech.optica_backend.model;
 
 import com.talentotech.optica_backend.exceptions.EntradaInvalidaExcepcion;
 
 public class Armazones extends Producto implements Vendible, Etiquetable{
         private Medidas medidas;
 
-        public Armazones (String name, Double price, int stock, Medidas medidas){
-            super(name, price, stock);
+        public Armazones (String nombre, Double precio, int stock, Medidas medidas){
+            super(nombre, precio, stock);
             this.medidas = medidas;
         }
 
@@ -26,15 +26,15 @@ public class Armazones extends Producto implements Vendible, Etiquetable{
             if (porcentaje < 0 || porcentaje > 100) {
                 throw new EntradaInvalidaExcepcion("Ingrese un porcentaje valido.");
             }else {
-                Double nuevo = Vendible.calcularDescuento(this.getPrice(), porcentaje);
-                setPrice(nuevo);
+                Double nuevo = Vendible.calcularDescuento(this.getPrecio(), porcentaje);
+                setPrecio(nuevo);
                 return nuevo;
             }
         }
 
         @Override 
         public void generarEtiqueta() {
-            System.out.println("Etiqueta : "+ getName() + " - Medida :" + medidas);        
+            System.out.println("Etiqueta : "+ getNombre() + " - Medida :" + medidas);        
         }
 
 }

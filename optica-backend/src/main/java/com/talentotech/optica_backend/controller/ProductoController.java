@@ -27,7 +27,7 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity <Producto> obtener(@PathVariable Long id) {
+    public ResponseEntity <Producto> obtener(@PathVariable Integer id) {
         return ResponseEntity.ok(productoService.buscarPorID(id));
     }
 
@@ -37,14 +37,14 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody DatosActualizacion datos) {
+    public ResponseEntity<Producto> actualizar(@PathVariable Integer id, @RequestBody DatosActualizacion datos) {
         return ResponseEntity.ok(productoService.actualizarProducto(id, datos.precio, datos.stock));
     }
 
     public record DatosActualizacion(Double precio, Integer stock) {}
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         productoService.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }

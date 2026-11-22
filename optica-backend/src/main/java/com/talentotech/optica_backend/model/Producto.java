@@ -1,4 +1,4 @@
-package com.talentotech.optica_backend;
+package com.talentotech.optica_backend.model;
 import java.lang.annotation.Inherited;
 
 import javax.annotation.processing.Generated;
@@ -9,56 +9,53 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
-import com.talentotech.optica_backend.model.Producto;
 
 @Entity
 public abstract class Producto {
 
-    @ID
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private static Long contadorId = 0L;
+    private Integer id;
     private static int totalProductos = 0;
-    private Long id;
-    private String name;
-    private Double price;
+    private String nombre;
+    private Double precio;
     private int stock;
     @Transient
-    private string categoria;
+    private String categoria;
 
-    public Producto(String name, Double price, int stock) {
+    public Producto(String nombre, Double precio, int stock) {
 
-        setName(name);
-        setPrice(price);
+        setName(nombre);
+        setPrice(precio);
         setStock(stock);
-        this.id = ++contadorId;
         totalProductos++;
     }
 
     public abstract String getCategoria();
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setName(String name) {
-        if (name != null && !name.trim().isEmpty()){
-            this.name = name;
+    public void setName(String nombre) {
+        if (nombre != null && !nombre.trim().isEmpty()){
+            this.nombre = nombre;
         }else {
             throw new EntradaInvalidaExcepcion("Ingrese un nombre valido");
         }
     }
 
-    public String getName() {
-        return name;
+    public String getNombre() {
+        return nombre;
     }
     
-    public Double getPrice() {
-        return price;
+    public Double getPrecio() {
+        return precio;
     }
 
-    public void setPrice(Double price) {
-        if (price >=0){
-            this.price = price;
+    public void setPrecio(Double precio) {
+        if (precio >=0){
+            this.precio = precio;
         }else{
             throw new EntradaInvalidaExcepcion("Ingreso un numero valido.");
         }
@@ -88,18 +85,18 @@ public abstract class Producto {
         }
     }
 
-    public static Double calcularImpuesto(Double price) {
-        return price * 0.21; //IVA
+    public static Double calcularImpuesto(Double precio) {
+        return precio * 0.21; //IVA
     }
 
-    public static Double calcularDescuento(Double price) {
-        return price * 0.10;
+    public static Double calcularDescuento(Double precio) {
+        return precio * 0.10;
     }
     
     public void mostrarDatos() {
         System.out.println("ID: " + id);
-        System.out.println("Nombre: " + name);
-        System.out.println("Precio: " + price);
+        System.out.println("Nombre: " + nombre);
+        System.out.println("Precio: " + precio);
         System.out.println("Stock: " + stock);
         System.out.println("Total de productos: " + getTotalProductos());
     }

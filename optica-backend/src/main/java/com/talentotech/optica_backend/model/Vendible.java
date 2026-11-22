@@ -1,4 +1,4 @@
-package com.talentotech.optica_backend;
+package com.talentotech.optica_backend.model;
 
 public interface Vendible {
     String ESTADO_DEFAULT = "Disponible";
@@ -9,8 +9,8 @@ public interface Vendible {
         System.out.println("Estado del producto: " + ESTADO_DEFAULT);
     }
 
-    static Double calcularDescuento(Double price, Double porcentaje) {
-        return price - (price*porcentaje/100);
+    static Double calcularDescuento(Double precio, Double porcentaje) {
+        return precio - (precio*porcentaje/100);
     }
 
 }
