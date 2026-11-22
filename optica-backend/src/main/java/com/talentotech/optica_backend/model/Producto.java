@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Column;
 import com.talentotech.optica_backend.model.Armazones;
 import com.talentotech.optica_backend.model.Medidas;
 import java.util.Optional;
@@ -30,6 +31,9 @@ public class Producto {
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
+    @Column(name = "ruta_imagen", length = 255)
+    private String rutaImagen;
+
     public Producto(String nombre, BigDecimal precio, int stock) {
 
         setNombre(nombre);
@@ -39,6 +43,10 @@ public class Producto {
     }
 
     protected Producto() {}
+
+    public String getRutaImagen() {
+    return rutaImagen;
+    }
 
     public Categoria getCategoria(){
         return categoria;
