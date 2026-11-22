@@ -37,7 +37,7 @@ public abstract class Producto {
         return id;
     }
 
-    public void setName(String nombre) {
+    public void setNombre(String nombre) {
         if (nombre != null && !nombre.trim().isEmpty()){
             this.nombre = nombre;
         }else {
