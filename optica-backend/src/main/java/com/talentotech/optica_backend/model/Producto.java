@@ -11,6 +11,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import com.talentotech.optica_backend.model.Armazones;
+import com.talentotech.optica_backend.model.Medidas;
+import java.util.Optional;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -32,7 +35,7 @@ public class Producto {
         setNombre(nombre);
         setPrecio(precio);
         setStock(stock);
-        totalProductos++;
+        // totalProductos++;
     }
 
     protected Producto() {}
@@ -80,9 +83,12 @@ public class Producto {
         }
     }
 
-    public static int getTotalProductos(){
-        return totalProductos;
+    public void setCategoria(Categoria categoria){
+        this.categoria = categoria;
     }
+    // public static int getTotalProductos(){
+    //     return totalProductos;
+    // }
 
     public void descontarStock(int cantidad) {
         if (cantidad >=0 && cantidad <= this.getStock()) {
@@ -105,6 +111,6 @@ public class Producto {
         System.out.println("Nombre: " + nombre);
         System.out.println("Precio: " + precio);
         System.out.println("Stock: " + stock);
-        System.out.println("Total de productos: " + getTotalProductos());
+        // System.out.println("Total de productos: " + getTotalProductos());
     }
 }

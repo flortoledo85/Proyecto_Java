@@ -1,6 +1,5 @@
 package com.talentotech.optica_backend.model;
 import java.math.BigDecimal;
-
 import com.talentotech.optica_backend.exceptions.EntradaInvalidaExcepcion;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -10,7 +9,7 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 
 @Entity
 @Table(name = "armazones")
-@PrimaryKeyJoinColumn("id")
+@PrimaryKeyJoinColumn(name = "id")
 
 public class Armazones extends Producto implements Vendible, Etiquetable{
         @Embedded

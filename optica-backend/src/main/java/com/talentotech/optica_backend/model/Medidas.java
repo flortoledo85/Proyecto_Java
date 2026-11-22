@@ -1,4 +1,5 @@
 package com.talentotech.optica_backend.model;
+import java.math.BigDecimal;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Column;
 

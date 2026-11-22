@@ -11,6 +11,9 @@ import com.talentotech.optica_backend.model.Producto;
 import com.talentotech.optica_backend.model.Categoria;
 import com.talentotech.optica_backend.repository.CategoriaRepository;
 import com.talentotech.optica_backend.repository.ProductoRepository;
+import com.talentotech.optica_backend.model.Armazones;
+import com.talentotech.optica_backend.model.Medidas;
+import java.util.Optional;
 
 @Service
 public class ProductoService {
@@ -23,7 +26,7 @@ public class ProductoService {
         this.categoriaRepository = categoriaRepository;
     }
 
-    public Producto agregarArmazon(String nombre, Double precio, int stock, Medidas medidas){
+    public Producto agregarArmazon(String nombre, BigDecimal precio, int stock, Medidas medidas){
         Producto nuevoArmazon = new Armazones(nombre, precio, stock, medidas);
         productos.add(nuevoArmazon);
         return nuevoArmazon;
@@ -34,7 +37,7 @@ public class ProductoService {
     }
 
     public Producto guardar(Producto p) {
-        p.setId(0);
+        // p.setId(0);
         p.setCategoria(obtenerCategoria(p));
         return repository.save(p);
     }
@@ -66,13 +69,16 @@ public class ProductoService {
         repository.delete(p);
     }
 
-    public Producto actualizarProducto(Integer id, Producto datos) {
+    public Producto actualizarProducto(Integer id, BigDecimal precio, Integer stock) {
         Producto p = buscarPorID(id);
 
-        p.setNombre(datos.getNombre());
-        p.setPrecio(datos.getPrecio());
-        p.setStock(datos.setStock());
-        p.setCategoria(obtenerCategoria(datos));
+        if (precio != null) {
+            p.setPrecio(precio);
+        }
+
+        if (stock != null) {
+            p.setStock(stock);
+        }
 
         return repository.save(p);
     }
