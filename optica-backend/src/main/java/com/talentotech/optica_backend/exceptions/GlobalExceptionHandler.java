@@ -14,5 +14,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
+    @ExceptionHandler(StockInsuficienteExcepcion.class)
+    public ResponseEntity<String> manejarStock(StockInsuficienteExcepcion e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 
+    @ExceptionHandler(EntradaInvalidaExcepcion.class)
+    public ResponseEntity<String> argumentoInvalido(EntradaInvalidaExcepcion e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }
