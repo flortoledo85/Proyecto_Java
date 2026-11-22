@@ -19,7 +19,7 @@ public class Categoria {
     public Categoria() {
     }
 
-    public getId() {
+    public int getId() {
         return id;
     }
 

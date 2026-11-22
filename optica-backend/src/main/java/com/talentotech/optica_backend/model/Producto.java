@@ -9,8 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Producto {
 
     @Id
@@ -59,11 +62,10 @@ public class Producto {
     }
 
     public void setPrecio(BigDecimal precio) {
-        if (precio >=0){
-            this.precio = precio;
-        }else{
+        if (precio == null || precio.signum() < 0){
             throw new EntradaInvalidaExcepcion("Ingreso un numero valido.");
         }
+        this.precio = precio;
     }
 
     public int getStock() {
@@ -91,11 +93,11 @@ public class Producto {
     }
 
     public static BigDecimal calcularImpuesto(BigDecimal precio) {
-        return precio * 0.21; //IVA
+        return precio.multiply(new BigDecimal("0.21")); 
     }
 
     public static BigDecimal calcularDescuento(BigDecimal precio) {
-        return precio * 0.10;
+        return precio.multiply(new BigDecimal("0.10"));
     }
 
     public void mostrarDatos() {
