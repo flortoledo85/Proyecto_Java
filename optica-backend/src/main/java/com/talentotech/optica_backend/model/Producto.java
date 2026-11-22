@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 
 @Entity
-public abstract class Producto {
+public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,11 @@ public abstract class Producto {
         totalProductos++;
     }
 
-    public abstract String getCategoria();
+    protected Producto() {}
+
+    public String getCategoria(){
+        return categoria;
+    };
 
     public Integer getId() {
         return id;
