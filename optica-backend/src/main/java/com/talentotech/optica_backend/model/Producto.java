@@ -1,13 +1,29 @@
 package com.talentotech.optica_backend;
-import com.talentotech.optica_backend.exceptions.*;
+import java.lang.annotation.Inherited;
 
+import javax.annotation.processing.Generated;
+
+import com.talentotech.optica_backend.exceptions.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
+import com.talentotech.optica_backend.model.Producto;
+
+@Entity
 public abstract class Producto {
+
+    @ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private static Long contadorId = 0L;
     private static int totalProductos = 0;
     private Long id;
     private String name;
     private Double price;
     private int stock;
+    @Transient
+    private string categoria;
 
     public Producto(String name, Double price, int stock) {
 

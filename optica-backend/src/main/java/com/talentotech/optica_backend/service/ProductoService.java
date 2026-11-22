@@ -9,20 +9,14 @@ import org.springframework.stereotype.Service;
 import com.talentotech.optica_backend.model.*;
 
 @Service
-// public class ProductoService {
-//     private final List<Producto> productos = List.of(
-//         new Armazones("RayBan Aviator", 45000.0, 10, new Medidas(140.0, 145.0, 50.0, 35.0)),
-//         new Armazones("Seven", 15000.0, 20, new Medidas(138.0, 142.0, 48.0, 34.0)),
-//         new Armazones("Sol Bordo", 25000.0, 15, new Medidas(140.0, 145.0, 53.0, 48.0))
-//     );
-
-//     public List<Producto> listarProductos() {
-//         return productos;
-//     }
-// }
 
 public class ProductoService {
+    private final ProductoRepository repository;
     private List<Producto> productos = new ArrayList<>();
+
+    public ProductoService(ProductoService repository) {
+        this.repository = repository;
+    }
 
     public Producto agregarArmazon(String nombre, Double precio, int stock, Medidas medidas){
   
@@ -95,7 +89,6 @@ public class ProductoService {
     }
 
     public List<Producto> getProductos() {
-        cargarProductosPrueba();
-        return productos;
+        return repository.findAll();
     }
 }
