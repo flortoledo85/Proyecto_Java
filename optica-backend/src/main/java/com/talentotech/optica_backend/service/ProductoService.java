@@ -33,9 +33,10 @@ public class ProductoService {
         return List.copyOf(productos);
     }
 
-    public Producto guardar(Producto producto) {
-        productos.add(producto);
-        return producto;
+    public Producto guardar(Producto p) {
+        p.setId(0);
+        p.setCategoria(obtenerCategoria(p));
+        return repository.save(p);
     }
 
     public Producto buscarPorID(Integer idBuscado) {
@@ -84,5 +85,27 @@ public class ProductoService {
 
     public List<Producto> getProductos() {
         return repository.findAll();
+    }
+
+    public List<Producto> listarPorCategoria(String categoria) {
+        List<Producto> resultado = new ArrayList<>();
+        for (Producto p : repository.findAll()) {
+            if (p.getCategoria().getNombre().equalsIgnoreCase(categoria)){
+                resultado.add(p);
+            }
+        }
+        return resultado;
+    }
+
+    private Categoria obtenerCategoria(Producto p){
+        if (p.getCategoria() == null) {
+            throw new EntradaInvalidaExcepcion("Categoria is invalid");
+        }
+        int idCategoria = p.getCategoria().getId();
+        Optional<Categoria> resultado = categoriaRepository.findById(idCategoria);
+        if (resultado.isEmpty()) {
+            throw new EntradaInvalidaExcepcion("This Categoria doesn't exist" + idCategoria);
+        }
+        return resultado.get();
     }
 }

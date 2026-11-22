@@ -97,7 +97,7 @@ public class Producto {
     public static BigDecimal calcularDescuento(BigDecimal precio) {
         return precio * 0.10;
     }
-    
+
     public void mostrarDatos() {
         System.out.println("ID: " + id);
         System.out.println("Nombre: " + nombre);
