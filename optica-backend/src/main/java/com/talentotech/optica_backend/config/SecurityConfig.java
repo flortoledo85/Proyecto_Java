@@ -16,7 +16,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
         throws Exception{
 
-            http.cors(Customizer.withDefaults()).authorizeHttpRequest(auth -> auth.requestMatchers(HttpMethod.GET, "/productos", "/productos/**").permitAll().anyRequest().authenticated());
+            http.cors(Customizer.withDefaults()).authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/productos", "/productos/**").permitAll().anyRequest().authenticated());
 
         return http.build();
     }
