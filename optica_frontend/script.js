@@ -30,7 +30,10 @@ async function cargarProductosApi() {
                 Ancho de cristal: ${p.medidas.anchoCristal} mm.
                 Alto de cristal: ${p.medidas.altoCristal} mm.`
                 : "Medidas no disponibles",
-            stock: p.stock
+            stock: p.stock,
+            category: typeof p.categoria === "string"
+                ? p.categoria
+                : p.categoria?.nombre ?? "Sin categoría",
         }));
         // const productosArray = await respuesta.json();
         return productosArray;
@@ -113,6 +116,7 @@ function insertarProducto(productos) {
             <a href="${productoActual.pathimg}" target="_blank">
             <img src="${productoActual.pathimg}" alt="${productoActual.description}"></a>
             <h3>${productoActual.name}</h3>
+            <p class="categoria_producto">${productoActual.category}</p>
             <p class= "stock">
                 Stock disponible: ${productoActual.stock ?? "No disponible"}
             </p>
@@ -145,25 +149,48 @@ function insertarProductoHTML(producto) {
     listaCarritoHTML.appendChild(liProducto);
 }
 
-function filtrarProductos(evento) {
+function filtrarProductos() {
 
-    const texto = evento.target.value.trim().toLowerCase();
+    const texto = document.querySelector("#buscarProducto")
+        .value.trim().toLowerCase();
 
-    const encontrados = productos.filter(p =>
-        p.name.toLowerCase().includes(texto)
-    );
+    const categoria = document.querySelector("#filtrarCategoria").value;
+
+    const encontrados = productos.filter(p => {
+        const coincideNombre = p.name.toLowerCase().includes(texto);
+
+        const coincideCategoria =
+            categoria === "" || p.category === categoria;
+
+        return coincideNombre && coincideCategoria;
+    });
 
     const catalogo = document.querySelector("#productos .catalogo");
-
     catalogo.innerHTML = "";
 
     if (encontrados.length === 0) {
         catalogo.innerHTML =
-            '<p style="color: white;">No se encontraron productos.</p>';
+            '<p style="color:white;">No se encontraron productos.</p>';
     } else {
         insertarProducto(encontrados);
-        actualizarStockVisible();
     }
+
+    actualizarStockVisible();
+}
+
+function cargarCategorias() {
+    const select = document.querySelector("#filtrarCategoria");
+
+    const categorias = [...new Set(
+        productos.map(p => p.category)
+    )].sort();
+
+    categorias.forEach(categoria => {
+        const opcion = document.createElement("option");
+        opcion.value = categoria;
+        opcion.textContent = categoria;
+        select.appendChild(opcion);
+    });
 }
 
 function actualizaContador() {
@@ -288,7 +315,7 @@ function mostrarDescripcion(evento) {
 function agregarAlCarrito(evento) {
 
     if (evento.target.tagName !== "BUTTON") return;
-    
+
     const idProducto = Number(evento.target.dataset.id);
     const producto = productos.find(p => p.id === idProducto);
     if (!producto) return;
@@ -302,7 +329,7 @@ function agregarAlCarrito(evento) {
     }
 
     if (existente) {
-        existente.cantidad = cantidadActual +1;
+        existente.cantidad = cantidadActual + 1;
     } else {
         listaCarrito.push({
             ...producto, cantidad: 1
@@ -377,16 +404,20 @@ function actualizarStockVisible() {
 async function main() {
     productos = await cargarProductosApi();
 
-    if(productos && productos.length > 0){
+    if (productos && productos.length > 0) {
         insertarProducto(productos);
     }
     else {
         alert("No se pueden cargar los productos. Intente mas tarde")
     }
 
+    cargarCategorias();
+
     const buscador = document.querySelector("#buscarProducto");
     buscador.addEventListener("input", filtrarProductos);
-    
+    document.querySelector("#filtrarCategoria").addEventListener("change", filtrarProductos);
+
+
     const contenedorProducto = document.querySelector("#productos .catalogo");
     // console.log(contenedorProducto);
     contenedorProducto.addEventListener("click", mostrarDescripcion);
@@ -396,7 +427,7 @@ async function main() {
     vaciarCarrito.addEventListener("click", eliminarCarritoEnStorage);
 
     const calcularPrecioTotal = document.querySelector("#carrito .calcularMontoTotal");
-    calcularPrecioTotal.addEventListener("click", calcularMontoTotal)
+    // calcularPrecioTotal.addEventListener("click", calcularMontoTotal)
 
     const listaCarritoHTML = document.querySelector("#carrito .list-group");
     listaCarritoHTML.addEventListener("click", cambiarCantidadCarrito);

@@ -48,6 +48,10 @@
             <div class="buscador">
                 <label for="buscarProducto">Buscar producto</label>
                 <input type="search" id="buscarProducto" placeholder="Buscar por nombre..." autocomplete="off">
+                <label for="filtrarCategoria">Categoría</label>
+                <select id="filtrarCategoria">
+                    <option value="">Todas las categorías</option>
+                </select>
             </div>
             <div class="catalogo">
             </div>
@@ -71,7 +75,7 @@
                 <div class="total d-flex justify-content-between mt-4">
                     <h5 class="text-light">Total: <span class="montoTotal" id="cart-total">$0,00</span></h5>
                     <button type="button" class="vaciarCarrito btn btn-primary-custom">Vaciar Carrito</button>
-                    <button class="btn calcularMontoTotal btn-primary-custom">Calcular Total</button>
+                    <!-- <button class="btn calcularMontoTotal btn-primary-custom">Calcular Total</button> -->
                 </div>
             </div>
         </section>
