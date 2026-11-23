@@ -23,7 +23,13 @@ async function cargarProductosApi() {
             name: p.nombre,
             price: Number(p.precio),
             pathimg: p.rutaImagen,
-            description: "Descripcion no disponible",
+            description: p.medidas
+                ? `Medidas:
+                Ancho de frente: ${p.medidas.anchoFrente} mm.
+                Largo de patilla: ${p.medidas.largoPatilla} mm.
+                Ancho de cristal: ${p.medidas.anchoCristal} mm.
+                Alto de cristal: ${p.medidas.altoCristal} mm.`
+                : "Medidas no disponibles",
             stock: p.stock
         }));
         // const productosArray = await respuesta.json();
@@ -64,11 +70,8 @@ function mostrarCatalogo2(catalogo) {
 }
 
 function calcularTotal(productos) {
-    let total = 0;
-    for (let i = 0; i < productos.length; i++) {
-        total += productos[i].price;
-    }
-    return total;
+    return productos.reduce(
+        (total, p) => total + p.price * (p.cantidad ?? 1), 0);
 }
 
 function buscarEnLista(catalogo, idBuscado) {
@@ -153,10 +156,90 @@ function guardarCarritoEnStorage(listaCarrito) {
 }
 
 function vaciarCarritoHTML() {
-    const listaVaciar = document.querySelector("#carrito .list-group");
-    listaVaciar.innerHTML = "";
-    const divTotal = document.querySelector(".montoTotal");
-    divTotal.textContent = "$0,00";
+    listaCarrito = [];
+    guardarCarritoEnStorage(listaCarrito);
+    renderizarCarrito();
+}
+
+function renderizarCarrito() {
+    const lista = document.querySelector("#carrito .list-group");
+    lista.innerHTML = "";
+
+    listaCarrito.forEach(p => {
+        const producto = productos.find(item => item.id === p.id);
+        const subtotal = p.price * p.cantidad;
+
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center gap-2";
+
+        const detalle = document.createElement("span");
+        detalle.textContent =
+            `${p.name} — ${subtotal.toLocaleString("es-AR", {
+                style: "currency",
+                currency: "ARS"
+            })}`;
+
+        const controles = document.createElement("div");
+
+        controles.innerHTML = `
+            <button type="button" class="btn btn-sm btn-outline-secondary"
+                data-accion="restar" data-id="${p.id}">−</button>
+
+            <span class="mx-2">${p.cantidad}</span>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary"
+                data-accion="sumar" data-id="${p.id}"
+                ${!producto || p.cantidad >= producto.stock ? "disabled" : ""}>+</button>
+        `;
+
+        li.append(detalle, controles);
+        lista.appendChild(li);
+    });
+
+    const unidades = listaCarrito.reduce(
+        (total, p) => total + p.cantidad, 0
+    );
+
+    document.querySelector("#carrito .contador_compra").textContent = unidades;
+
+    document.querySelector("#carrito .montoTotal").textContent =
+        calcularTotal(listaCarrito).toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS"
+        });
+
+    actualizarStockVisible();
+}
+
+function cambiarCantidadCarrito(evento) {
+
+    const boton = evento.target.closest("button[data-accion]");
+    if (!boton) return;
+
+    const id = Number(boton.dataset.id);
+    const accion = boton.dataset.accion;
+
+    const item = listaCarrito.find(p => p.id === id);
+    const producto = productos.find(p => p.id === id);
+
+    if (!item || !producto) return;
+
+    if (accion === "sumar") {
+        if (item.cantidad >= producto.stock) return;
+
+        item.cantidad++;
+    }
+
+    if (accion === "restar") {
+        item.cantidad--;
+
+        if (item.cantidad === 0) {
+            listaCarrito = listaCarrito.filter(p => p.id !== id);
+        }
+    }
+
+    guardarCarritoEnStorage(listaCarrito);
+    renderizarCarrito();
 }
 
 function mostrarDescripcion(evento) {
@@ -184,18 +267,29 @@ function mostrarDescripcion(evento) {
 
 function agregarAlCarrito(evento) {
 
-    if (evento.target.tagName === "BUTTON") {
-        const idProducto = parseInt(evento.target.dataset.id);
-        const idEncontrado = buscarEnLista(listaCarrito, idProducto);
+    if (evento.target.tagName !== "BUTTON") return;
+    
+    const idProducto = Number(evento.target.dataset.id);
+    const producto = productos.find(p => p.id === idProducto);
+    if (!producto) return;
 
-        if (idEncontrado === -1) {
-            const productoEncontrado = buscarProductoID(productos, idProducto);
-            listaCarrito.push(productoEncontrado);
-            insertarProductoHTML(productoEncontrado);
-            actualizaContador();
-            guardarCarritoEnStorage(listaCarrito);
-        }
+    const existente = listaCarrito.find(p => p.id === idProducto);
+    const cantidadActual = existente?.cantidad ?? 0;
+
+    if (cantidadActual >= producto.stock) {
+        alert("No hay stock suficiente");
+        return;
     }
+
+    if (existente) {
+        existente.cantidad = cantidadActual +1;
+    } else {
+        listaCarrito.push({
+            ...producto, cantidad: 1
+        });
+    }
+    guardarCarritoEnStorage(listaCarrito);
+    renderizarCarrito();
 }
 
 function cargarCarritoStorage() {
@@ -230,6 +324,37 @@ function calcularMontoTotal(evento) {
     }
 }
 
+function actualizarStockVisible() {
+
+    productos.forEach(producto => {
+
+        const enCarrito = listaCarrito.find(
+            p => p.id === producto.id
+        );
+
+        const cantidad = enCarrito?.cantidad ?? 0;
+        const disponible = Math.max(0, producto.stock - cantidad);
+
+        const boton = document.querySelector(
+            `#productos .producto button[data-id="${producto.id}"]`
+        );
+
+        if (!boton) return;
+
+        const tarjeta = boton.closest(".producto");
+        const stockHTML = tarjeta.querySelector(".stock");
+
+        if (stockHTML) {
+            stockHTML.textContent = `Stock disponible: ${disponible}`;
+        }
+
+        boton.disabled = disponible === 0;
+        boton.textContent = disponible === 0
+            ? "Sin stock disponible"
+            : "Agregar al Carrito";
+    });
+}
+
 async function main() {
     productos = await cargarProductosApi();
 
@@ -252,15 +377,15 @@ async function main() {
     const calcularPrecioTotal = document.querySelector("#carrito .calcularMontoTotal");
     calcularPrecioTotal.addEventListener("click", calcularMontoTotal)
 
-    listaCarrito = cargarCarritoStorage();
+    const listaCarritoHTML = document.querySelector("#carrito .list-group");
+    listaCarritoHTML.addEventListener("click", cambiarCantidadCarrito);
 
-    if (listaCarrito.length != 0) {
-        for (const producto of listaCarrito) {
-            insertarProductoHTML(producto);
-        }
-        actualizaContador();
-    }
+    listaCarrito = cargarCarritoStorage().map(p => ({
+        ...p,
+        cantidad: p.cantidad ?? 1
+    }));
 
+    renderizarCarrito();
 }
 
 function validarFormulario(evento) {
