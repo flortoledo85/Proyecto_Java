@@ -110,6 +110,9 @@ function insertarProducto(productos) {
             <a href="${productoActual.pathimg}" target="_blank">
             <img src="${productoActual.pathimg}" alt="${productoActual.description}"></a>
             <h3>${productoActual.name}</h3>
+            <p class= "stock">
+                Stock disponible: ${productoActual.stock ?? "No disponible"}
+            </p>
             <p>
                 <a class="description_product" href="#." data-descripcion="${productoActual.description}"> 
                 Descripción &#xFF0B;</a>

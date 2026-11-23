@@ -514,3 +514,16 @@ footer {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+.producto {
+    color: #f5f5f5;
+    background-color: #1a1a1a;
+}
+
+.producto h3,
+.producto p {
+    display: block;
+    color: #f5f5f5;
+    visibility: visible;
+    opacity: 1;
+}
