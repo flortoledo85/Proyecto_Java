@@ -23,13 +23,14 @@ async function cargarProductosApi() {
             name: p.nombre,
             price: Number(p.precio),
             pathimg: p.rutaImagen,
-            description: p.medidas
-                ? `Medidas:
-                Ancho de frente: ${p.medidas.anchoFrente} mm.
-                Largo de patilla: ${p.medidas.largoPatilla} mm.
-                Ancho de cristal: ${p.medidas.anchoCristal} mm.
-                Alto de cristal: ${p.medidas.altoCristal} mm.`
-                : "Medidas no disponibles",
+            description: p.descripcion ?? "Sin descripcion",
+            // description: p.medidas
+            //     ? `Medidas:
+            //     Ancho de frente: ${p.medidas.anchoFrente} mm.
+            //     Largo de patilla: ${p.medidas.largoPatilla} mm.
+            //     Ancho de cristal: ${p.medidas.anchoCristal} mm.
+            //     Alto de cristal: ${p.medidas.altoCristal} mm.`
+            //     : "Medidas no disponibles",
             stock: p.stock,
             category: typeof p.categoria === "string"
                 ? p.categoria

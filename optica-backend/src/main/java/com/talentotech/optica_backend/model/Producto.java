@@ -34,6 +34,9 @@ public class Producto {
     @Column(name = "ruta_imagen", length = 255)
     private String rutaImagen;
 
+    @Column(name = "descripcion")
+    private String descripcion;
+
     public Producto(String nombre, BigDecimal precio, int stock) {
 
         setNombre(nombre);
@@ -46,6 +49,14 @@ public class Producto {
 
     public String getRutaImagen() {
     return rutaImagen;
+    }
+
+    public String getDescripcion() {
+    return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+    this.descripcion = descripcion;
     }
 
     public Categoria getCategoria(){
