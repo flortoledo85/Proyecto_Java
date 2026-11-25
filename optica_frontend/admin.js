@@ -1,0 +1,115 @@
+// Primera etapa de migración React -> HTML/JS.
+// Carga los productos reales de Spring Boot y reproduce las tarjetas de Dashboard.jsx.
+// No ejecuta todavía escrituras sobre MySQL: falta conectar POST/PUT/DELETE y JWT.
+const API_PRODUCTOS = 'http://localhost:8081/productos';
+const POR_PAGINA = 8;
+let productos = [];
+let paginaActual = 1;
+let productoEnEdicion = null;
+
+const $ = (selector) => document.querySelector(selector);
+const precioARS = new Intl.NumberFormat('es-AR', {style:'currency',currency:'ARS',maximumFractionDigits:2});
+const texto = (valor) => valor == null ? '' : String(valor);
+const categoriaNombre = (p) => typeof p.categoria === 'string' ? p.categoria : p.categoria?.nombre ?? 'Sin categoría';
+const imagen = (p) => p.rutaImagen ?? p.ruta_imagen ?? '';
+
+function mensaje(m) { $('#status').textContent = m; }
+function mensajeFormulario(m) { $('#form-status').textContent = m; }
+
+function renderProductos() {
+  const lista = $('#product-list');
+  lista.replaceChildren();
+  $('#product-counter').textContent = `${productos.length} productos`;
+  const paginas = Math.max(1, Math.ceil(productos.length / POR_PAGINA));
+  paginaActual = Math.min(paginaActual, paginas);
+  const inicio = (paginaActual-1)*POR_PAGINA;
+  productos.slice(inicio,inicio+POR_PAGINA).forEach((p) => {
+    const li = document.createElement('li'); li.className='product-card';
+    const img = document.createElement('img'); img.className='product-image';
+    img.src = imagen(p) || './pictures/imagen-no-disponible.jpg'; img.alt = p.nombre || 'Producto';
+    img.addEventListener('error',()=>{img.style.visibility='hidden';});
+    const info = document.createElement('div'); info.className='product-info';
+    const nombre = document.createElement('span'); nombre.className='product-name'; nombre.textContent=p.nombre ?? '';
+    const precio = document.createElement('span'); precio.className='product-price'; precio.textContent=precioARS.format(Number(p.precio)||0);
+    const categoria = document.createElement('span'); categoria.className='product-category'; categoria.textContent=categoriaNombre(p);
+    info.append(nombre,precio,categoria);
+    const actions = document.createElement('div'); actions.className='product-actions';
+    const editar = document.createElement('button'); editar.className='btn-edit'; editar.type='button'; editar.textContent='Editar';
+    editar.addEventListener('click',()=>seleccionarProducto(p));
+    const eliminar = document.createElement('button'); eliminar.className='btn-delete'; eliminar.type='button'; eliminar.textContent='Eliminar';
+    eliminar.addEventListener('click',()=>mensajeFormulario('Todavía no se eliminó ningún producto: conectaremos DELETE /productos/{id} después de configurar JWT.'));
+    actions.append(editar,eliminar); li.append(img,info,actions); lista.append(li);
+  });
+  if (!productos.length) mensaje('No se encontraron productos.');
+  const navegacion = $('#page-numbers'); navegacion.replaceChildren();
+  const comienzo=Math.max(1,Math.min(paginaActual-2,paginas-4));
+  for(let num=comienzo;num<=Math.min(paginas,comienzo+4);num++){
+    const btn=document.createElement('button');btn.type='button';btn.className='page-button'+(num===paginaActual?' current':'');
+    btn.textContent=String(num);btn.setAttribute('aria-label',`Página ${num}`);
+    if(num===paginaActual)btn.setAttribute('aria-current','page');
+    btn.addEventListener('click',()=>{paginaActual=num;renderProductos();});navegacion.append(btn);
+  }
+  $('#prev-page').disabled=paginaActual===1;
+  $('#next-page').disabled=paginaActual===paginas;
+}
+
+function cargarCategorias() {
+  const select=$('#product-category');
+  const actual=select.value;
+  select.replaceChildren(new Option('Seleccionar una categoría',''));
+  [...new Set(productos.map(categoriaNombre).filter(x=>x && x!=='Sin categoría'))].sort((a,b)=>a.localeCompare(b,'es')).forEach(nombre=>select.add(new Option(nombre,nombre)));
+  select.value=actual;
+}
+
+function seleccionarProducto(p) {
+  productoEnEdicion=p;
+  $('#form-heading').textContent='Editar producto';
+  $('#save-product').textContent='Actualizar producto';
+  $('#cancel-edit').hidden=false;
+  $('#product-name').value=texto(p.nombre);
+  $('#product-description').value=texto(p.descripcion);
+  $('#product-price').value=texto(p.precio);
+  $('#product-stock').value=texto(p.stock);
+  $('#product-category').value=categoriaNombre(p);
+  $('#product-image').value=imagen(p);
+  actualizarImagen(); mensajeFormulario(`Editando producto #${p.id}. Todavía no se envían cambios a MySQL.`);
+  $('.form-section').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function limpiarFormulario() {
+  productoEnEdicion=null;$('#product-form').reset();
+  $('#form-heading').textContent='Agregar nuevo producto';
+  $('#save-product').textContent='Guardar producto';
+  $('#cancel-edit').hidden=true;
+  actualizarImagen();mensajeFormulario('');
+}
+function actualizarImagen() {
+  const ruta=$('#product-image').value.trim();
+  $('#image-preview').hidden=!ruta;
+  if(ruta)$('#preview-img').src=ruta;
+}
+
+async function cargarProductos() {
+  try {
+    const r=await fetch(API_PRODUCTOS);
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const datos=await r.json();
+    if(!Array.isArray(datos))throw new Error('La API no devolvió una lista de productos');
+    productos=datos;paginaActual=1;
+    mensaje('');cargarCategorias();renderProductos();
+  } catch(err) {
+    mensaje(`No pudimos cargar el catálogo desde ${API_PRODUCTOS}: ${err.message}. Comprobá que Spring Boot esté iniciado.`);
+    console.error(err);
+  }
+}
+
+$('#prev-page').addEventListener('click',()=>{if(paginaActual>1){paginaActual--;renderProductos();}});
+$('#next-page').addEventListener('click',()=>{if(paginaActual<Math.ceil(productos.length/POR_PAGINA)){paginaActual++;renderProductos();}});
+$('#cancel-edit').addEventListener('click',limpiarFormulario);
+$('#product-image').addEventListener('input',actualizarImagen);
+$('#product-form').addEventListener('submit',(evento)=>{
+  evento.preventDefault();
+  if(!evento.currentTarget.reportValidity())return;
+  mensajeFormulario(`Formulario válido. Falta integrar ${productoEnEdicion ? 'PUT' : 'POST'} /productos y la autenticación JWT; no se modificó MySQL.`);
+});
+cargarProductos();

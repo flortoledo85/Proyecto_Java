@@ -35,6 +35,7 @@
                     <li><a href="./pictures/medidas.jpg" target="_blank"
                             aria-label="Diagrama de un par de anteojos visto de frente y de costado que muestra las dimensiones principales: ancho total 136 mm, ancho del cristal 54 mm, alto del cristal 40 mm, puente de 18 mm y patillas de 140 mm.">Medidas</a>
                     </li>
+                    <li><a href="./admin.html">Administrar catálogo</a></li>
                     <li><a href="#resenias" target="_self">Reseñas</a></li>
                     <li><a href="#contact" target="_self">Contacto</a></li>
                     <li><a href="#carrito"><i class="fa fa-shopping-bag fa-lg" aria-hidden="true"></i></a></li>
@@ -74,6 +75,17 @@
                 </div>
                 <div class="total d-flex justify-content-between mt-4">
                     <h5 class="text-light">Total: <span class="montoTotal" id="cart-total">$0,00</span></h5>
+                    <div class="datos-pedido">
+                        <label for="usuarioPedido">Nombre del cliente</label>
+                        <input type="text" id="usuarioPedido" required>
+
+                        <label for="emailPedido">Correo electrónico</label>
+                        <input type="email" id="emailPedido" required>
+
+                        <button type="button" id="confirmarPedido" class="btn-primary-custom">
+                            Confirmar compra
+                        </button>
+                    </div>
                     <button type="button" class="vaciarCarrito btn btn-primary-custom">Vaciar Carrito</button>
                     <!-- <button class="btn calcularMontoTotal btn-primary-custom">Calcular Total</button> -->
                 </div>

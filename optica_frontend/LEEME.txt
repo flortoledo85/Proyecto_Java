@@ -1,0 +1,9 @@
+Optic Choices - Primera etapa del panel de administración
+
+Copiar admin.html, admin.css y admin.js en optica-frontend/, junto a index.html.
+Abrir http://127.0.0.1:5500/admin.html mediante Live Server y arrancar Spring Boot en http://localhost:8081.
+
+Funciona: GET /productos, tarjetas, 8 por página, paginación, selección para editar, formulario precargado, previsualización de ruta de imagen.
+Pendiente: POST/PUT/DELETE (primero revisar DTO exactos del backend) y JWT/roles.
+El diseño replica los CSS de Dashboard.jsx y FormProduct.jsx del proyecto React.
+NO se reutiliza la clave de ImgBB ni se conecta Firebase.

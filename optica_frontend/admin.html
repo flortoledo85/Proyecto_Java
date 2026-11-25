@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f0f0f">
+  <title>Administración de productos | Optic Choices</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./admin.css">
+  <script src="./admin.js" defer></script>
+</head>
+<body>
+  <header class="top-header">
+    <div class="top-bar">
+      <a class="brand" href="./index.html">Optic Choices</a>
+      <a class="return-link" href="./index.html">← Volver al catálogo</a>
+    </div>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a href="./index.html">Inicio</a>
+      <a href="./index.html#catalogo">Productos</a>
+      <span class="active-link" aria-current="page">Administración</span>
+    </nav>
+  </header>
+
+  <main class="admin-container">
+    <h1>Administración de productos</h1>
+    <hr class="divider">
+    <!-- <div class="status-notice" role="note">Vista de integración: el catálogo se carga desde Spring Boot. Guardar y eliminar productos quedarán habilitados cuando conectemos los endpoints protegidos con JWT.</div> -->
+    <div class="content">
+      <section class="list-section" aria-labelledby="products-heading">
+        <div class="section-header">
+          <h2 id="products-heading">Lista de productos</h2>
+          <span id="product-counter" class="counter"></span>
+        </div>
+        <p id="status" class="message" role="status" aria-live="polite">Cargando productos...</p>
+        <ul id="product-list" class="products-list" aria-label="Productos del catálogo"></ul>
+        <nav class="pagination" aria-label="Páginas del catálogo">
+          <button id="prev-page" class="page-button" type="button" aria-label="Página anterior">←</button>
+          <div id="page-numbers" class="page-numbers"></div>
+          <button id="next-page" class="page-button" type="button" aria-label="Página siguiente">→</button>
+        </nav>
+      </section>
+
+      <aside class="form-section" aria-labelledby="form-heading">
+        <h2 id="form-heading">Agregar nuevo producto</h2>
+        <form id="product-form" class="product-form">
+          <div class="field"><label for="product-name">Nombre</label><input id="product-name" name="nombre" type="text" placeholder="Ej.: Pink Love" required maxlength="100"></div>
+          <div class="field"><label for="product-description">Descripción</label><textarea id="product-description" name="descripcion" placeholder="Características generales del producto" rows="3"></textarea></div>
+          <div class="field"><label for="product-price">Precio ($)</label><input id="product-price" name="precio" type="number" min="0.01" step="0.01" placeholder="Ej.: 50000" required></div>
+          <div class="field"><label for="product-stock">Stock</label><input id="product-stock" name="stock" type="number" min="0" step="1" placeholder="Ej.: 20" required></div>
+          <div class="field"><label for="product-category">Categoría</label><select id="product-category" name="categoria" required><option value="">Seleccionar una categoría</option></select></div>
+          <div class="field"><label for="product-image">Ruta de imagen</label><input id="product-image" name="rutaImagen" type="text" placeholder="./pictures/imagen.jpg"><div class="hint">Usamos las rutas locales de imágenes de tu proyecto Java.</div></div>
+          <div class="image-preview" id="image-preview" hidden><img id="preview-img" alt="Vista previa de la imagen del producto"></div>
+          <div class="form-actions"><button id="cancel-edit" class="outline-button" type="button" hidden>Cancelar edición</button><button class="primary-button" type="submit" id="save-product">Guardar producto</button></div>
+          <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </aside>
+    </div>
+  </main>
+  <footer class="footer">Optic Choices · Panel de administración</footer>
+</body>
+</html>
