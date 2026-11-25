@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 import javax.annotation.processing.Generated;
 
-import com.talentotech.excepciones.*;
+import com.talentotech.optica_backend.exceptions.*;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,7 +13,7 @@ import jakarta.persistence.*;
 public class LineaPedido {
 
     @Id 
-    @GeneratedValue(strategy = GenerationTyep.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
@@ -44,7 +44,7 @@ public class LineaPedido {
         this.subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
     }
 
-    public BigDecimal getSubtoral() {
+    public BigDecimal getSubtotal() {
         return subtotal;
     }
     // public BigDecimal calcularSubtotal() {
