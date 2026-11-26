@@ -13,6 +13,7 @@ import com.talentotech.optica_backend.repository.CategoriaRepository;
 import com.talentotech.optica_backend.repository.ProductoRepository;
 import com.talentotech.optica_backend.model.Armazones;
 import com.talentotech.optica_backend.model.Medidas;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
@@ -62,18 +63,39 @@ public class ProductoService {
         repository.delete(p);
     }
 
-    public Producto actualizarProducto(Integer id, BigDecimal precio, Integer stock) {
-        Producto p = buscarPorID(id);
+    @Transactional
+    public Producto actualizarProducto(Integer id, String nombre, String descripcion, BigDecimal precio, Integer stock, Integer categoriaId, String rutaImagen){
+        Producto producto = buscarPorID(id);
 
-        if (precio != null) {
-            p.setPrecio(precio);
+        if (nombre == null || nombre.isBlank()) {
+            throw new EntradaInvalidaExcepcion("El nombre es obligatorio");
         }
 
-        if (stock != null) {
-            p.setStock(stock);
+        if (precio == null || precio.signum() < 0) {
+            throw new EntradaInvalidaExcepcion("Precio inválido");
         }
 
-        return repository.save(p);
+        if (stock == null || stock < 0) {
+            throw new StockInsuficienteExcepcion("Stock inválido");
+        }
+
+        if (categoriaId == null) {
+            throw new EntradaInvalidaExcepcion("Debe seleccionar una categoría");
+        }
+
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+            .orElseThrow(() -> new EntradaInvalidaExcepcion(
+                "Categoría no encontrada: " + categoriaId
+            ));
+
+        producto.setNombre(nombre.trim());
+        producto.setDescripcion(descripcion == null ? "" : descripcion.trim());
+        producto.setPrecio(precio);
+        producto.setStock(stock);
+        producto.setCategoria(categoria);
+        producto.setRutaImagen(rutaImagen == null ? "" : rutaImagen.trim());
+
+        return repository.save(producto);
     }
     // public void cargarProductosPrueba() {
     //     agregarArmazon("RayBan Aviator", 45000.0, 10, new Medidas(140.0, 145.0, 50.0, 35.0));

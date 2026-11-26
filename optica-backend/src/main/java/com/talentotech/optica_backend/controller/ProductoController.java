@@ -1,4 +1,5 @@
 package com.talentotech.optica_backend;
+
 import java.math.BigDecimal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,15 +28,16 @@ public class ProductoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Producto>> listarProductos(@RequestParam(name = "nombre", required = false) String nombre) {
-        if (nombre == null){
+    public ResponseEntity<List<Producto>> listarProductos(
+            @RequestParam(name = "nombre", required = false) String nombre) {
+        if (nombre == null) {
             return ResponseEntity.ok(productoService.getProductos());
         }
         return ResponseEntity.ok(productoService.buscarPorNombre(nombre));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity <Producto> obtener(@PathVariable Integer id) {
+    public ResponseEntity<Producto> obtener(@PathVariable Integer id) {
         return ResponseEntity.ok(productoService.buscarPorID(id));
     }
 
@@ -43,10 +45,11 @@ public class ProductoController {
     public ResponseEntity<Producto> crear(@RequestBody DatosAlta datos) {
         DatosMedidas m = datos.medidas();
         Producto producto;
-        if (m == null){
+        if (m == null) {
             producto = new Producto(datos.nombre(), datos.precio(), datos.stock());
         } else {
-            if(m.anchoFrente() == null || m.largoPatilla() == null || m.anchoCristal() == null || m.altoCristal() == null) {
+            if (m.anchoFrente() == null || m.largoPatilla() == null || m.anchoCristal() == null
+                    || m.altoCristal() == null) {
                 throw new EntradaInvalidaExcepcion("Completá las cuatro medidas del armazón.");
             }
             Medidas medidas = new Medidas(m.anchoFrente(), m.largoPatilla(), m.anchoCristal(), m.altoCristal());
@@ -55,17 +58,21 @@ public class ProductoController {
         producto.setCategoria(datos.categoria());
         return ResponseEntity.ok(productoService.guardar(producto));
     }
-    public record DatosAlta(String nombre, BigDecimal precio, int stock, Categoria categoria, DatosMedidas medidas) {}
 
-    public record DatosMedidas(Double anchoFrente, Double largoPatilla, Double anchoCristal, Double altoCristal) {}
+    public record DatosAlta(String nombre, BigDecimal precio, int stock, Categoria categoria, DatosMedidas medidas) {
+    }
 
+    public record DatosMedidas(Double anchoFrente, Double largoPatilla, Double anchoCristal, Double altoCristal) {
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Producto> actualizar(@PathVariable Integer id, @RequestBody DatosActualizacion datos) {
-        return ResponseEntity.ok(productoService.actualizarProducto(id, datos.precio, datos.stock));
+        return ResponseEntity.ok(productoService.actualizarProducto(id, datos.nombre(),datos.descripcion(), datos.precio(), datos.stock(), datos.categoriaId(), datos.rutaImagen()));
     }
 
-    public record DatosActualizacion(BigDecimal precio, Integer stock) {}
+    public record DatosActualizacion(String nombre, String descripcion, BigDecimal precio, Integer stock,
+            Integer categoriaId, String rutaImagen) {
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {

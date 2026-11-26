@@ -54,11 +54,28 @@ function renderProductos() {
 }
 
 function cargarCategorias() {
-  const select=$('#product-category');
-  const actual=select.value;
-  select.replaceChildren(new Option('Seleccionar una categoría',''));
-  [...new Set(productos.map(categoriaNombre).filter(x=>x && x!=='Sin categoría'))].sort((a,b)=>a.localeCompare(b,'es')).forEach(nombre=>select.add(new Option(nombre,nombre)));
-  select.value=actual;
+    const select = $('#product-category');
+    const actual = select.value;
+
+    select.replaceChildren(
+        new Option('Seleccionar una categoría', '')
+    );
+
+    const categorias = new Map();
+
+    productos.forEach(p => {
+        if (p.categoria?.id != null) {
+            categorias.set(p.categoria.id, p.categoria.nombre);
+        }
+    });
+
+    [...categorias.entries()]
+        .sort((a, b) => a[1].localeCompare(b[1], 'es'))
+        .forEach(([id, nombre]) => {
+            select.add(new Option(nombre, String(id)));
+        });
+
+    select.value = actual;
 }
 
 function seleccionarProducto(p) {
@@ -70,9 +87,8 @@ function seleccionarProducto(p) {
   $('#product-description').value=texto(p.descripcion);
   $('#product-price').value=texto(p.precio);
   $('#product-stock').value=texto(p.stock);
-  $('#product-category').value=categoriaNombre(p);
+  $('#product-category').value = String(p.categoria?.id ?? '');
   $('#product-image').value=imagen(p);
-  actualizarImagen(); mensajeFormulario(`Editando producto #${p.id}. Todavía no se envían cambios a MySQL.`);
   $('.form-section').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
@@ -107,9 +123,50 @@ $('#prev-page').addEventListener('click',()=>{if(paginaActual>1){paginaActual--;
 $('#next-page').addEventListener('click',()=>{if(paginaActual<Math.ceil(productos.length/POR_PAGINA)){paginaActual++;renderProductos();}});
 $('#cancel-edit').addEventListener('click',limpiarFormulario);
 $('#product-image').addEventListener('input',actualizarImagen);
-$('#product-form').addEventListener('submit',(evento)=>{
-  evento.preventDefault();
-  if(!evento.currentTarget.reportValidity())return;
-  mensajeFormulario(`Formulario válido. Falta integrar ${productoEnEdicion ? 'PUT' : 'POST'} /productos y la autenticación JWT; no se modificó MySQL.`);
+$('#product-form').addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+
+    if (!evento.currentTarget.reportValidity()) return;
+
+    if (productoEnEdicion === null) {
+        mensajeFormulario('Primero seleccioná un producto para editar.');
+        return;
+    }
+
+    const datosActualizados = {
+        nombre: $('#product-name').value.trim(),
+        descripcion: $('#product-description').value.trim(),
+        precio: Number($('#product-price').value),
+        stock: Number($('#product-stock').value),
+        categoriaId: Number($('#product-category').value),
+        rutaImagen: $('#product-image').value.trim()
+    };
+
+    try {
+        const respuesta = await fetch(
+            `${API_PRODUCTOS}/${productoEnEdicion.id}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(datosActualizados)
+            }
+        );
+
+        if (!respuesta.ok) {
+            throw new Error(`HTTP ${respuesta.status}`);
+        }
+
+        limpiarFormulario();
+        await cargarProductos();
+
+        mensajeFormulario('Producto actualizado correctamente');
+
+    } catch (error) {
+        console.error(error);
+        mensajeFormulario('No se pudo actualizar: ' + error.message);
+    }
 });
+
 cargarProductos();

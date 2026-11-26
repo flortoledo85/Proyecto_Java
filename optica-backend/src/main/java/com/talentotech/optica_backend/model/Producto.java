@@ -1,6 +1,5 @@
 package com.talentotech.optica_backend.model;
 import java.math.BigDecimal;
-import java.lang.annotation.Inherited;
 import javax.annotation.processing.Generated;
 import com.talentotech.optica_backend.exceptions.*;
 import jakarta.persistence.Entity;
@@ -12,9 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Column;
-import com.talentotech.optica_backend.model.Armazones;
-import com.talentotech.optica_backend.model.Medidas;
-import java.util.Optional;
+
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -48,15 +45,19 @@ public class Producto {
     protected Producto() {}
 
     public String getRutaImagen() {
-    return rutaImagen;
+        return rutaImagen;
     }
 
     public String getDescripcion() {
-    return descripcion;
+        return descripcion;
     }
 
     public void setDescripcion(String descripcion) {
-    this.descripcion = descripcion;
+        this.descripcion = descripcion;
+    }
+
+    public void setRutaImagen(String rutaImagen) {
+        this.rutaImagen = rutaImagen;
     }
 
     public Categoria getCategoria(){
