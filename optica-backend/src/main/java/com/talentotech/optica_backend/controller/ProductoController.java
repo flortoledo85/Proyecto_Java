@@ -52,14 +52,29 @@ public class ProductoController {
                     || m.altoCristal() == null) {
                 throw new EntradaInvalidaExcepcion("Completá las cuatro medidas del armazón.");
             }
+            if (datos.stock() == null || datos.stock() < 0) {
+                throw new EntradaInvalidaExcepcion("Stock inválido");
+            }
             Medidas medidas = new Medidas(m.anchoFrente(), m.largoPatilla(), m.anchoCristal(), m.altoCristal());
             producto = new Armazones(datos.nombre(), datos.precio(), datos.stock(), medidas);
         }
-        producto.setCategoria(datos.categoria());
+        Categoria categoria = productoService.buscarCategoriaPorId(datos.categoriaId());
+
+        producto.setCategoria(categoria);
+        producto.setDescripcion(datos.descripcion());
+        producto.setRutaImagen(datos.rutaImagen());
+
         return ResponseEntity.ok(productoService.guardar(producto));
     }
 
-    public record DatosAlta(String nombre, BigDecimal precio, int stock, Categoria categoria, DatosMedidas medidas) {
+    public record DatosAlta(
+            String nombre,
+            String descripcion,
+            BigDecimal precio,
+            Integer stock,
+            Integer categoriaId,
+            String rutaImagen,
+            DatosMedidas medidas) {
     }
 
     public record DatosMedidas(Double anchoFrente, Double largoPatilla, Double anchoCristal, Double altoCristal) {
@@ -67,7 +82,8 @@ public class ProductoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Producto> actualizar(@PathVariable Integer id, @RequestBody DatosActualizacion datos) {
-        return ResponseEntity.ok(productoService.actualizarProducto(id, datos.nombre(),datos.descripcion(), datos.precio(), datos.stock(), datos.categoriaId(), datos.rutaImagen()));
+        return ResponseEntity.ok(productoService.actualizarProducto(id, datos.nombre(), datos.descripcion(),
+                datos.precio(), datos.stock(), datos.categoriaId(), datos.rutaImagen()));
     }
 
     public record DatosActualizacion(String nombre, String descripcion, BigDecimal precio, Integer stock,

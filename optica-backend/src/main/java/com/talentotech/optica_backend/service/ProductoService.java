@@ -62,6 +62,20 @@ public class ProductoService {
         Producto p = buscarPorID(id);
         repository.delete(p);
     }
+    
+    public Categoria buscarCategoriaPorId(Integer id) {
+
+    if (id == null) {
+        throw new EntradaInvalidaExcepcion(
+            "Debe seleccionar una categoría"
+        );
+    }
+
+    return categoriaRepository.findById(id)
+        .orElseThrow(() -> new EntradaInvalidaExcepcion(
+            "Categoría no encontrada: " + id
+        ));
+    }
 
     @Transactional
     public Producto actualizarProducto(Integer id, String nombre, String descripcion, BigDecimal precio, Integer stock, Integer categoriaId, String rutaImagen){
