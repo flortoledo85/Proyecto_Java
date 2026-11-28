@@ -39,7 +39,7 @@ public class JwtConfig {
             .build();
 
         decoder.setJwtValidator(
-            JwtValidators.createDefaultWithIssuer("optica-backend")
+            JwtValidators.createDefaultWithIssuer("optica_backend")
         );
 
         return decoder;

@@ -116,6 +116,17 @@ async function eliminarProducto(p) {
             }
         });
 
+        if (respuesta.status === 401) {
+            tokenAdmin = '';
+            sessionStorage.removeItem('optic_admin_token');
+            actualizarVistaSesion();
+
+            mensajeFormulario(
+                'La sesión venció o el token no es válido. Volvé a iniciar sesión.'
+            );
+            return;
+        }
+
         if (!respuesta.ok) {
             throw new Error(`HTTP ${respuesta.status}`);
         }
@@ -207,6 +218,18 @@ $('#product-form').addEventListener('submit', async (evento) => {
             body: JSON.stringify(datosActualizados)
         });
 
+        if (respuesta.status === 401) {
+            tokenAdmin = '';
+            sessionStorage.removeItem('optic_admin_token');
+            actualizarVistaSesion();
+
+            mensajeFormulario(
+                'La sesión venció o el token no es válido. Volvé a iniciar sesión.'
+            );
+            return;
+        }
+
+
         if (!respuesta.ok) {
             throw new Error(`HTTP ${respuesta.status}`);
         }
@@ -255,7 +278,12 @@ $('#login-form').addEventListener('submit', async (evento) => {
         }
 
         const datos = await respuesta.json();
-
+        console.log("Campos recibidos:", Object.keys(datos));
+        console.log(
+            "¿Recibimos un JWT?",
+            typeof datos.token === "string" &&
+            datos.token.split(".").length === 3
+        );
         tokenAdmin = datos.token;
         sessionStorage.setItem('optic_admin_token', tokenAdmin);
 

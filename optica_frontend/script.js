@@ -426,10 +426,9 @@ async function main() {
 
     const vaciarCarrito = document.querySelector("#carrito .vaciarCarrito");
     vaciarCarrito.addEventListener("click", eliminarCarritoEnStorage);
-
-    const calcularPrecioTotal = document.querySelector("#carrito .calcularMontoTotal");
-    // calcularPrecioTotal.addEventListener("click", calcularMontoTotal)
-
+    document.querySelector("#confirmarPedido").addEventListener("click", confirmarPedido);
+    document.querySelector("#usuarioPedido").value = sessionStorage.getItem("cliente_usuario") || "";
+    document.querySelector("#ver-mis-pedidos").addEventListener("click", cargarMisPedidos);
     const listaCarritoHTML = document.querySelector("#carrito .list-group");
     listaCarritoHTML.addEventListener("click", cambiarCantidadCarrito);
 
@@ -438,6 +437,7 @@ async function main() {
         cantidad: p.cantidad ?? 1
     }));
 
+    
     renderizarCarrito();
 }
 
@@ -462,9 +462,310 @@ function validarFormulario(evento) {
 
 }
 
+const API_AUTH = 'http://localhost:8081/auth';
+
+document.querySelector('#registro-form')
+    .addEventListener('submit', async (evento) => {
+
+        evento.preventDefault();
+
+        const nombreUsuario =
+            document.querySelector('#registro-usuario').value.trim();
+
+        const email =
+            document.querySelector('#registro-email').value.trim();
+
+        const clave =
+            document.querySelector('#registro-clave').value;
+
+        try {
+            const respuesta = await fetch(`${API_AUTH}/registro`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nombreUsuario,
+                    email,
+                    clave
+                })
+            });
+
+            if (!respuesta.ok) {
+                throw new Error(`HTTP ${respuesta.status}`);
+            }
+
+            const usuario = await respuesta.json();
+
+            document.querySelector('#auth-cliente-status').textContent =
+                `Usuario ${usuario.nombreUsuario} registrado correctamente.`;
+
+            document.querySelector('#cliente-usuario').value =
+                usuario.nombreUsuario;
+
+            document.querySelector('#registro-form').reset();
+
+        } catch (error) {
+            document.querySelector('#auth-cliente-status').textContent =
+                `No se pudo registrar: ${error.message}`;
+        }
+    });
 
 
+document.querySelector('#login-cliente-form')
+    .addEventListener('submit', async (evento) => {
+
+        evento.preventDefault();
+
+        const usuario =
+            document.querySelector('#cliente-usuario').value.trim();
+
+        const clave =
+            document.querySelector('#cliente-clave').value;
+
+        try {
+            const respuesta = await fetch(`${API_AUTH}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ usuario, clave })
+            });
+
+            if (!respuesta.ok) {
+                throw new Error(`HTTP ${respuesta.status}`);
+            }
+
+            const datos = await respuesta.json();
+
+            sessionStorage.setItem('cliente_token', datos.token);
+            sessionStorage.setItem('cliente_usuario', usuario);
+
+            document.querySelector('#auth-cliente-status').textContent =
+                'Sesión iniciada correctamente';
+
+            mostrarSesionCliente(usuario);
+            cargarMisPedidos();
+
+        } catch (error) {
+            document.querySelector('#auth-cliente-status').textContent =
+                `No se pudo iniciar sesión: ${error.message}`;
+        }
+    });
+
+document.querySelector('#cliente-logout')
+    .addEventListener('click', () => {
+
+        sessionStorage.removeItem('cliente_token');
+        sessionStorage.removeItem('cliente_usuario');
+
+        document.querySelector('#cliente-sesion').hidden = true;
+        document.querySelector('#registro-form').hidden = false;
+        document.querySelector('#login-cliente-form').hidden = false;
+        document.querySelector("#lista-mis-pedidos").replaceChildren();
+        document.querySelector("#pedidos-estado").textContent = "Iniciá sesión para consultar tus pedidos.";
+        document.querySelector('#auth-cliente-status').textContent =
+            'Sesión cerrada';
+    });
+
+function mostrarSesionCliente(usuario) {
+    document.querySelector("#cliente-nombre").textContent =
+        `Bienvenido, ${usuario}`;
+    document.querySelector("#usuarioPedido").value = usuario;
+    document.querySelector("#cliente-sesion").hidden = false;
+    document.querySelector("#registro-form").hidden = true;
+    document.querySelector("#login-cliente-form").hidden = true;
+
+}
+
+const tokenGuardado = sessionStorage.getItem("cliente_token");
+const usuarioGuardado = sessionStorage.getItem("cliente_usuario");
+
+if (tokenGuardado && usuarioGuardado) {
+    mostrarSesionCliente(usuarioGuardado);
+    cargarMisPedidos();
+}
 // EJECUCION DE MI PROGRAMA
+
+async function confirmarPedido() {
+
+    const estado = document.querySelector("#pedido-estado");
+    const boton = document.querySelector("#confirmarPedido");
+    const emailInput = document.querySelector("#emailPedido");
+
+    const token = sessionStorage.getItem("cliente_token");
+    const usuario = sessionStorage.getItem("cliente_usuario");
+
+    if (!token || !usuario) {
+        estado.textContent = "Primero tenés que iniciar sesión.";
+        return;
+    }
+
+    if (listaCarrito.length === 0) {
+        estado.textContent = "El carrito está vacío.";
+        return;
+    }
+
+    if (!emailInput.reportValidity()) return;
+
+    const datosPedido = {
+        usuario: usuario,
+        email: emailInput.value.trim(),
+        lineas: listaCarrito.map(p => ({
+            productoId: p.id,
+            cantidad: p.cantidad
+        }))
+    };
+
+    boton.disabled = true;
+    estado.textContent = "Procesando pedido...";
+
+    try {
+        const respuesta = await fetch(
+            "http://localhost:8081/pedidos",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(datosPedido)
+            }
+        );
+
+        if (!respuesta.ok) {
+            if (respuesta.status === 401) {
+                throw new Error("La sesión venció. Volvé a iniciar sesión.");
+            }
+            throw new Error(`HTTP ${respuesta.status}`);
+        }
+
+        const pedido = await respuesta.json();
+
+        listaCarrito = [];
+        guardarCarritoEnStorage(listaCarrito);
+        renderizarCarrito();
+
+        estado.textContent =
+            `¡Pedido N.º ${pedido.id} confirmado correctamente!`;
+
+        // Recargamos los productos para reflejar el nuevo stock.
+        const nuevosProductos = await cargarProductosApi();
+
+        if (Array.isArray(nuevosProductos)) {
+            productos = nuevosProductos;
+            filtrarProductos();
+        }
+
+    } catch (error) {
+        console.error(error);
+        estado.textContent =
+            `No se pudo confirmar el pedido: ${error.message}`;
+    } finally {
+        boton.disabled = false;
+    }
+}
+
+async function cargarMisPedidos() {
+
+    const lista = document.querySelector("#lista-mis-pedidos");
+    const estado = document.querySelector("#pedidos-estado");
+
+    const token = sessionStorage.getItem("cliente_token");
+
+    lista.replaceChildren();
+
+    if (!token) {
+        estado.textContent =
+            "Iniciá sesión para consultar tus pedidos.";
+        return;
+    }
+
+    estado.textContent = "Cargando pedidos...";
+
+    try {
+        const respuesta = await fetch(
+            "http://localhost:8081/pedidos/mis",
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        if (respuesta.status === 401) {
+            throw new Error(
+                "La sesión venció. Volvé a iniciar sesión."
+            );
+        }
+
+        if (!respuesta.ok) {
+            throw new Error(`HTTP ${respuesta.status}`);
+        }
+
+        const pedidos = await respuesta.json();
+
+        if (pedidos.length === 0) {
+            estado.textContent =
+                "Todavía no realizaste ninguna compra.";
+            return;
+        }
+
+        estado.textContent =
+            `Tenés ${pedidos.length} pedido(s) registrado(s).`;
+
+        pedidos.forEach(pedido => {
+
+            const elemento = document.createElement("li");
+            elemento.className = "list-group-item";
+
+            const titulo = document.createElement("h3");
+            titulo.textContent = `Pedido N.º ${pedido.id}`;
+
+            const fecha = document.createElement("p");
+            fecha.textContent =
+                `Fecha: ${pedido.fecha.replace("T", " ").slice(0, 16)}`;
+
+            const productosPedido = document.createElement("ul");
+
+            pedido.lineas.forEach(linea => {
+
+                const item = document.createElement("li");
+
+                const subtotal = Number(linea.subtotal)
+                    .toLocaleString("es-AR", {
+                        style: "currency",
+                        currency: "ARS"
+                    });
+
+                item.textContent =
+                    `${linea.producto} — ` +
+                    `${linea.cantidad} unidad(es) — ${subtotal}`;
+
+                productosPedido.appendChild(item);
+            });
+
+            const total = document.createElement("p");
+
+            total.textContent =
+                `Total: ${Number(pedido.total).toLocaleString("es-AR", {
+                    style: "currency",
+                    currency: "ARS"
+                })}`;
+
+            elemento.append(titulo, fecha, productosPedido, total);
+            lista.appendChild(elemento);
+        });
+
+    } catch (error) {
+        console.error("Error al consultar pedidos:", error);
+
+        estado.textContent =
+            `No se pudieron cargar los pedidos: ${error.message}`;
+    }
+}
+
 
 main();
 const validacionForm = document.querySelector("#contact .formulario");

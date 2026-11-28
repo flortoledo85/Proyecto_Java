@@ -1,10 +1,6 @@
 package com.talentotech.optica_backend.model;
 
-import java.lang.annotation.Inherited;
 import java.math.BigDecimal;
-
-import javax.annotation.processing.Generated;
-
 import com.talentotech.optica_backend.exceptions.*;
 import jakarta.persistence.*;
 
@@ -34,9 +30,18 @@ public class LineaPedido {
     protected LineaPedido(){};
     
     public LineaPedido(Pedido pedido, Producto producto, int cantidad) {
-        if (pedido == null || producto == null || cantidad <= 0) {
-            throw new EntradaInvalidaExcepcion("No hay suficiente stock de " + producto.getNombre());
+        if (pedido == null || producto == null) {
+            throw new EntradaInvalidaExcepcion(
+                "El pedido y el producto son obligatorios."
+            );
         }
+
+        if (cantidad <= 0) {
+            throw new EntradaInvalidaExcepcion(
+                "La cantidad debe ser mayor que cero."
+            );
+        }
+
         this.pedido = pedido;
         this.producto = producto;
         this.cantidad = cantidad;
@@ -46,6 +51,14 @@ public class LineaPedido {
 
     public BigDecimal getSubtotal() {
         return subtotal;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public int getCantidad() {
+        return cantidad;
     }
     // public BigDecimal calcularSubtotal() {
     //     return producto.getPrecio()*cantidad;

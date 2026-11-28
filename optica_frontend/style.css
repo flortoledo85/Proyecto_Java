@@ -239,6 +239,39 @@ main {
     color: #0a0a0a;
 }
 
+.seccion-usuarios {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 24px;
+    background-color: #1a1a1a;
+    border: 1px solid #00d9ff;
+    border-radius: 12px;
+    color: aliceblue;
+}
+
+.formularios-usuarios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.formularios-usuarios form {
+    flex: 1 1 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.formularios-usuarios input {
+    padding: 12px;
+    border: 1px solid #00d9ff;
+    border-radius: 6px;
+}
+
+.seccion-usuarios [hidden] {
+    display: none !important;
+}
+
 .catalogo {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
